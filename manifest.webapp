@@ -1,0 +1,23 @@
+{
+  "name": "IT之家",
+  "description": "IT之家 KaiOS 版",
+  "version": "0.1",
+  "launch_path": "/index.html",
+  "type": "privileged",
+  "origin": "app://com.zixing.ithome",
+  "icons": {
+    "56": "/img/icon.png"
+  },
+  "developer": {
+    "name": "zixing",
+    "url": "http://www.ithome.com/"
+  },
+  "permissions": {
+    "attention": {},
+    "browser": {},
+    "mobilenetwork": {},
+	"systemXHR" : {}
+  },
+  "ime_default_softkey_bar": true,
+  "theme_color": "#d43c33"
+}
