@@ -332,7 +332,7 @@ function checkUpdate()
 			} else {
 				alert('您的版本已经是最新版本。');
 			}
-			showPage(ref_page);
+			showPage("list");
 		});
 }
 //checkUpdate();
