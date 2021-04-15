@@ -1,7 +1,7 @@
 {
   "name": "IT之家",
   "description": "IT之家 KaiOS 版",
-  "version": "0.1",
+  "version": "0.2",
   "launch_path": "/index.html",
   "type": "privileged",
   "origin": "app://com.zixing.ithome",

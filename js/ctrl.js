@@ -3,7 +3,7 @@ var cachepage = 'list';
 var isloading = 0;
 var info = { //应用属性
 	appname: 'IT之家kaios客户端',
-	version: '0.0.0.1',
+	version: '0.0.0.2',
 	summary: '“IT之家”是业内领先的IT资讯和数码产品类网站。IT之家快速精选泛科技新闻，分享即时的IT业界动态和紧跟潮流的数码产品资讯，提供给力的PC和手机技术文章、丰富的系统应用美化资源，以及享不尽的智能阅读。',
 	thanks: '感谢为kaios开发付出的每一个人！',
 	website: 'www.ithome.com'
@@ -248,6 +248,12 @@ function displayComments(Ci) { //显示评论列表TODO
 		} else {
 			try {
 				var comments = [];
+				if(data.content.clist.length == 0)
+				{
+					alert("没有下一页了！");
+					showPage('comments');
+					return;
+				}
 				data.content.clist.myforEach(function (item) {
 					item = item.M;
 					comments.push('<li><img src="' + getHeadUrl(item.Ui) + '" alt="头像" onerror=\"onerror=null;src=\'img/avatar_default_rect.png\'\" />  <div><h3>' + item.N + ' (' + item.SF + ')</h3><p><span>' + dateline(item.T) + '</span><span>' + item.Ta + '</span></p><p>' + item.C + '</p></div></li>');
@@ -273,10 +279,14 @@ function displayComments(Ci) { //显示评论列表TODO
 				}
 				showPage('comments'); 
 				window.scrollTo(0, 0);
-				getById("next_button_comments").blur();
+				var next_button_comments = getById("next_button_comments");
+				if(next_button_comments)
+				{
+					next_button_comments.blur();
+				} 
 			}
 			catch (err) {
-				alert("评论获取失败！"); 
+				alert(err+"评论获取失败！"); 
 				showPage('article');
 			}
 		}
@@ -577,7 +587,7 @@ function nav(move) {
 	} 
 	if (isshowmenu === 1) {
 		const currentIndex = document.activeElement.tabIndex;
-		const next = currentIndex + move;
+		var next = currentIndex + move;
 		if (next < 0) {
 			next = menu.length - 1;
 		}
@@ -590,7 +600,7 @@ function nav(move) {
 	}
 	else {
 		const currentIndex = document.activeElement.tabIndex;
-		const next = currentIndex + move;
+		var next = currentIndex + move;
 		const items = document.querySelectorAll('.item');
 		const targetElement = items[next];
 		targetElement.focus();
@@ -598,7 +608,7 @@ function nav(move) {
 		if (next == 0) {
 			$('.items').scrollTop(0);
 		}
-    } 
+    }
 }
 
 function tab(move) {
@@ -639,9 +649,11 @@ function handleKeydown(e) {
 		case 'Backspace':
 			SoftRight()
 			break;
+		case 'Q':
 		case 'SoftLeft':
 			SoftLeft();
 			break;
+		case 'E':
 		case 'SoftRight':
 			SoftRight()
 			break;
@@ -655,7 +667,7 @@ function handleKeydown(e) {
 document.activeElement.addEventListener('keydown', handleKeydown);
 softkey('选项', '查看', '退出');
 window.onload = function() { //应用载入之后开始执行。
-	getById('about').innerHTML = '<h3>' + info.appname + '</h3><p>版本：' + info.version + '</p><p>简介：' + info.summary + '</p><p>感谢：' + info.thanks + '</p><p>官方网站：' + info.website +'</p><p><p>';
+	getById('about').innerHTML = '<h3>' + info.appname + '</h3><p>版本：' + info.version + '</p><p>简介：' + info.summary + '</p><p>感谢：' + info.thanks + '</p><p>官方网站：' + info.website +'</p><p></p>';
 	//widget.setNavigationEnabled(false); //设置成按键控制
 	 
 	if (getCookie('userhash')) { 
