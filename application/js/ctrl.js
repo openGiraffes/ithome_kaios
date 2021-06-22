@@ -1,7 +1,7 @@
-var page_list = 1, page_comments = 1, list_top = 0, ref_page = 'list', last_page = 'list'; //当前页码
+var page_list = 1, page_comments = 1, list_top = 0, ref_page = 'list', last_page = 'list';
 var cachepage = 'list';
 var isloading = 0;
-var info = { //应用属性
+var info = {
 	appname: 'IT之家kaios客户端',
 	version: '0.0.0.2',
 	summary: '“IT之家”是业内领先的IT资讯和数码产品类网站。IT之家快速精选泛科技新闻，分享即时的IT业界动态和紧跟潮流的数码产品资讯，提供给力的PC和手机技术文章、丰富的系统应用美化资源，以及享不尽的智能阅读。',
@@ -12,8 +12,8 @@ var info = { //应用属性
 function setCookie(value, name) {
 	if (value === null) {
 		value = "";
-    }
-	localStorage.setItem(name,value);
+	}
+	localStorage.setItem(name, value);
 }
 
 function getCookie(name) {
@@ -21,28 +21,28 @@ function getCookie(name) {
 }
 
 var CMD = { //菜单执行的命令
-	refersh : 1, //刷新
+	refersh: 1, //刷新
 	about: 2, //关于
 	comment: 3, //评论写 
 	login: 5, //登录
-	checkVersion : 6, //检查新版本
+	checkVersion: 6, //检查新版本
 	logout: 7, //注销
 	comments: 8 //查看评论
 };
 var menu_refersh = new MenuItem('刷新', CMD.refersh),
-	  menu_about = new MenuItem('关于', CMD.about), 
-	  menu_login = new MenuItem('登录', CMD.login),
-	  menu_logout = new MenuItem('注销', CMD.logout),
-	  menu_checkVersion = new MenuItem('检查新版本', CMD.checkVersion),
-	  menu_comments = new MenuItem('查看评论', CMD.comments),
-	  menu_comment = new MenuItem('写评论', CMD.comment);
+	menu_about = new MenuItem('关于', CMD.about),
+	menu_login = new MenuItem('登录', CMD.login),
+	menu_logout = new MenuItem('注销', CMD.logout),
+	menu_checkVersion = new MenuItem('检查新版本', CMD.checkVersion),
+	menu_comments = new MenuItem('查看评论', CMD.comments),
+	menu_comment = new MenuItem('写评论', CMD.comment);
 
 var menu = []; // 显示的菜单
 var loginedlistmenu = [menu_refersh, menu_logout, menu_about, menu_checkVersion];//登录后的列表菜单
 var unloginedlistmenu = [menu_refersh, menu_login, menu_about, menu_checkVersion];//未登录的列表菜单
-var loginedarticlemenu = [ menu_comment, menu_comments, menu_logout];//登录后的文章菜单
+var loginedarticlemenu = [menu_comment, menu_comments, menu_logout];//登录后的文章菜单
 var unloginedarticlemenu = [menu_login, menu_comments];//未登录的文章菜单
-var loginedcommentmenu =  [menu_comment, menu_logout];//登录后的评论菜单
+var loginedcommentmenu = [menu_comment, menu_logout];//登录后的评论菜单
 var unloginedcommentmenu = [menu_login];//未登录的评论菜单
 
 //设置导航栏
@@ -52,29 +52,23 @@ function softkey(left, center, right) {
 	$('#softkey-right').text(right);
 }
 
-//-----------------------------------------------
 function showPage(id) { //显示id和隐藏其它页面
 	var pages = [
-		'login_form', 
+		'login_form',
 		'about',
 		'list',
 		'article',
 		'comments',
 		'loading'
 	];
-	pages.myforEach(function(item) { 
-	  
-		if(id === 'loading')
-		{  
-			//alert(item);
+	pages.myforEach(function (item) {
+
+		if (id === 'loading') {
 			getById(id).style.display = 'block';
-			//getById(last_page).style.display = 'block';
 			isloading = 1;
-			 
-			//alert(111);
 			return;
 		};
-		
+
 		if (id === item) {
 			last_page = id;
 			ref_page = cachepage;
@@ -82,15 +76,15 @@ function showPage(id) { //显示id和隐藏其它页面
 			isloading = 0;
 			if (id === 'list') {
 				setTitle();
-				softkey('选项', '查看', '退出'); 
+				softkey('选项', '查看', '退出');
 				if (getCookie('userhash')) {
 					menu = loginedlistmenu;
 				}
 				else {
 					menu = unloginedlistmenu;
-                }
+				}
 			} else if (id === 'article') {
-				window.scrollTo(0,0);
+				window.scrollTo(0, 0);
 				softkey('选项', '', '返回');
 				if (getCookie('userhash')) {
 					menu = loginedarticlemenu;
@@ -110,23 +104,21 @@ function showPage(id) { //显示id和隐藏其它页面
 		} else {
 			getById(item).style.display = 'none';
 		}
-	}); 
+	});
 	if (id != 'loading') {
 		cachepage = id;//记录上一个page
 	}
-	if(id === 'list')
-	{
-		try{ 
-			const currentIndex = lastnewsindex; 
+	if (id === 'list') {
+		try {
+			const currentIndex = lastnewsindex;
 			const items = document.querySelectorAll('.item');
 			const targetElement = items[currentIndex];
 			targetElement.blur();
 			targetElement.focus();
-			targetElement.scrollIntoView(true); 
+			targetElement.scrollIntoView(true);
 		}
-		catch(err)
-		{
-			
+		catch (err) {
+
 		}
 	}
 }
@@ -142,65 +134,60 @@ function displayList(hash) { //显示文章列表
 	if (hash === 0) {
 		tabIndex = 0;
 		lastnewsindex = 0;
-    }
-	ajax_get('http://api.ithome.com/json/listpage/news/'+hash, function(error, data) {
+	}
+	ajax_get('http://api.ithome.com/json/listpage/news/' + hash, function (error, data) {
 		if (error) {
 			alert(error);
 		} else {
-			
-			var articles = []; 
+
+			var articles = [];
 			var currentIndex = document.activeElement.tabIndex - 1;
 			if (currentIndex < 0) {
 				currentIndex = 0;
-            }
-			if(data.toplist)
-			{
-				
-				data.toplist.myforEach(function(item) { 
-					articles.push('<li class="item" tabIndex="' + tabIndex + '" data-showitem="' + escape(JSON.stringify(item))+'"><a>' + '<img  src="' + item.image.replace('https://', 'http://') + '" alt="图片" />' + '<div><h3 style="color:red">[置顶]' + item.title + '</h3><p><span>' + humanedate(item.postdate) + '</span><span>评论(' + item.commentcount + ')</span></p></div></a></li>');
+			}
+			if (data.toplist) {
+
+				data.toplist.myforEach(function (item) {
+					articles.push('<li class="item" tabIndex="' + tabIndex + '" data-showitem="' + escape(JSON.stringify(item)) + '"><a>' + '<img  src="' + item.image.replace('https://', 'http://') + '" alt="图片" />' + '<div><h3 style="color:red">[置顶]' + item.title + '</h3><p><span>' + humanedate(item.postdate) + '</span><span>评论(' + item.commentcount + ')</span></p></div></a></li>');
 					tabIndex += 1;
 				});
 			}
-			
-			data.newslist.myforEach(function(item) { 
-				articles.push('<li class="item" tabIndex="' + tabIndex + '" data-showitem="' + escape(JSON.stringify(item)) +'"><a href="javascript:displayArticle(\'' + escape(JSON.stringify(item)) + '\')">' + '<img  src="' + item.image.replace('https://', 'http://') + '" alt="图片" />' + '<div><h3>' + item.title + '</h3><p><span>' + humanedate(item.postdate) + '</span><span>评论(' + item.commentcount + ')</span></p></div></a></li>');
+			data.newslist.myforEach(function (item) {
+				articles.push('<li class="item" tabIndex="' + tabIndex + '" data-showitem="' + escape(JSON.stringify(item)) + '"><a href="javascript:displayArticle(\'' + escape(JSON.stringify(item)) + '\')">' + '<img  src="' + item.image.replace('https://', 'http://') + '" alt="图片" />' + '<div><h3>' + item.title + '</h3><p><span>' + humanedate(item.postdate) + '</span><span>评论(' + item.commentcount + ')</span></p></div></a></li>');
 				tabIndex += 1;
-				lastnewsTime = item.orderdate; 
+				lastnewsTime = item.orderdate;
 			});
-			if (hash!=0) { //提供了url说明是下一页
+			if (hash != 0) { //提供了url说明是下一页
 				getById('list').innerHTML += articles.join('');
-			} else {
+			}
+			else {
 				getById('list').innerHTML = articles.join('');
 			}
 			//删掉next按钮
 			var next_button = getById('next_button');
 			if (next_button) { //原来有next按钮
-				next_button.parentNode.removeChild(next_button);  
+				next_button.parentNode.removeChild(next_button);
 			}
-			
-			if(data.newslist.length>0)
-			{ 
-				getById('list').innerHTML += '<li id="next_button" class="item" tabIndex="' + tabIndex + '" data-showitem2="' +get_next(lastnewsTime)+'"><center><a>加载更多……</a></center></li>';
+			if (data.newslist.length > 0) {
+				getById('list').innerHTML += '<li id="next_button" class="item" tabIndex="' + tabIndex + '" data-showitem2="' + get_next(lastnewsTime) + '"><center><a>加载更多……</a></center></li>';
 			}
-			else
-			{
-				getById('list').innerHTML += '<div id="bottom">我们是有底线的</div>'; 
-			} 
+			else {
+				getById('list').innerHTML += '<div id="bottom">我们是有底线的</div>';
+			}
 			showPage('list');
-			//showPage('loading');//显示加载动画
 			if (hash != 0) {
 				document.body.scrollTop += 20;
 			}
 			else {
-				if (document.activeElement.tabIndex == -1) { 
+				if (document.activeElement.tabIndex == -1) {
 					nav(1);
 				}
-				else { 
+				else {
 					nav(0);
-                }
-            }
+				}
+			}
 			if (next_button) { //原来有next按钮 
-				const items = document.querySelectorAll('.item'); 
+				const items = document.querySelectorAll('.item');
 				var targetElement = items[currentIndex];
 				targetElement.focus();
 				targetElement.scrollIntoView(true);
@@ -211,20 +198,16 @@ function displayList(hash) { //显示文章列表
 function displayArticle(item) { //显示文章正文
 	showPage('loading');//显示加载动画
 	item = JSON.parse(unescape(item))
-	//getById('content').className = item.newsid;
-	//displayComments('0')
-	//return; // http://cmt.ithome.com/api/comment/getnewscomment?sn=4c70d4f5c7bdb61f&cid=48966977 
-	 
-	url='http://api.ithome.com/json/newscontent/'+item.newsid
+	url = 'http://api.ithome.com/json/newscontent/' + item.newsid
 	list_top = document.body.scrollTop;
-	ajax_get(url, function(error, data) {
+	ajax_get(url, function (error, data) {
 		if (error) {
 			alert(error);
 		} else {
 			setTitle(item.title);
 			getById('dateline').textContent = dateline(item.postdate);
-			getById('author').textContent = data.newssource+'('+data.newsauthor+')'; 
-			getById('comment_num').innerHTML = '<a href="javascript:displayComments(0)">评论('+item.commentcount+')</a>';
+			getById('author').textContent = data.newssource + '(' + data.newsauthor + ')';
+			getById('comment_num').innerHTML = '<a href="javascript:displayComments(0)">评论(' + item.commentcount + ')</a>';
 			getById('content').innerHTML = UBB(data.detail);
 			getById('content').className = item.newsid;
 			showPage('article');
@@ -236,20 +219,17 @@ lastCommentCi = ''
 
 function displayComments(Ci) { //显示评论列表TODO 
 	showPage('loading');//显示加载动画 
-	url =  'http://cmt.ithome.com/api/comment/getnewscomment?sn='+getCommentSn(getById('content').className);
-	 
-	if(Ci!=0)
-	{
-		url=url+'&cid='+Ci;
+	url = 'http://cmt.ithome.com/api/comment/getnewscomment?sn=' + getCommentSn(getById('content').className);
+	if (Ci != 0) {
+		url = url + '&cid=' + Ci;
 	}
-	ajax_get(url, function(error, data) {
+	ajax_get(url, function (error, data) {
 		if (error) {
 			alert(error);
 		} else {
 			try {
 				var comments = [];
-				if(data.content.clist.length == 0)
-				{
+				if (data.content.clist.length == 0) {
 					alert("没有下一页了！");
 					showPage('comments');
 					return;
@@ -275,67 +255,57 @@ function displayComments(Ci) { //显示评论列表TODO
 				}
 				else {
 					getById('comments').innerHTML += '<div class="bottom">我们是有底线的</div>';
-
 				}
-				showPage('comments'); 
+				showPage('comments');
 				window.scrollTo(0, 0);
 				var next_button_comments = getById("next_button_comments");
-				if(next_button_comments)
-				{
+				if (next_button_comments) {
 					next_button_comments.blur();
-				} 
+				}
 			}
 			catch (err) {
-				alert(err+"评论获取失败！"); 
+				alert(err + "评论获取失败！");
 				showPage('article');
 			}
 		}
 	});
 }
 
-function compareVer(oldver,newver)
-{
+function compareVer(oldver, newver) {
 	var a = oldver.split('.');
 	var b = newver.split('.');
-	
-	for(var i = 0;i<a.length;i++)
-	{
-		if (parseInt(b[i]) >parseInt(a[i]))
-		{
+
+	for (var i = 0; i < a.length; i++) {
+		if (parseInt(b[i]) > parseInt(a[i])) {
 			return true;
 		}
-		else if (parseInt(b[i]) ===parseInt(a[i]))
-		{
+		else if (parseInt(b[i]) === parseInt(a[i])) {
 			continue;
 		}
-		else if (parseInt(b[i]) <parseInt(a[i]))
-		{
+		else if (parseInt(b[i]) < parseInt(a[i])) {
 			return false;
 		}
 	}
 	return false;
 }
 
-function checkUpdate()
-{ 
+function checkUpdate() {
 	showPage('loading');
-	url ='http://sss.wmm521.cn/kaios/ithome_ver.json?_='+(new Date().getTime());
-	 
-	ajax_get(url, function(error, data) {
-			 
-			if (error) {
-				alert(error);
-			} else if (compareVer(info.version,data.version)) {
-				//有新版本
-				alert('有新版本，版本号：'+data.version);
-				window.open(data.downloadUrl);
-			} else {
-				alert('您的版本已经是最新版本。');
-			}
-			showPage("list");
-		});
+	url = 'http://sss.wmm521.cn/kaios/ithome_ver.json?_=' + (new Date().getTime());
+
+	ajax_get(url, function (error, data) {
+
+		if (error) {
+			alert(error);
+		} else if (compareVer(info.version, data.version)) {
+			alert('有新版本，版本号：' + data.version);
+			window.open(data.downloadUrl);
+		} else {
+			alert('您的版本已经是最新版本。');
+		}
+		showPage("list");
+	});
 }
-//checkUpdate();
 function selectMenu(id) { //选择了菜单项
 	if (id === CMD.refersh) { //点击刷新 
 		if (last_page === "list") {
@@ -344,37 +314,34 @@ function selectMenu(id) { //选择了菜单项
 		else if (last_page === "article") {
 
 		} else if (last_page === "comments") {
-			 
+
 		}
 	} else if (id === CMD.about) { //点击关于
-		showPage('about'); 
-		softkey('隐藏', '', '返回'); 
+		showPage('about');
+		softkey('隐藏', '', '返回');
 		window.scrollTo(0, 0);
-	} else if (id === CMD.checkVersion) { 
+	} else if (id === CMD.checkVersion) {
 		checkUpdate();
 	} else if (id === CMD.comment) { //发布评论
 		var content = prompt('评论内容：');
 		if (content) {
-			//var so = device.getServiceObject('Service.SysInfo', 'ISysInfo');
-			//var result = so.ISysInfo.GetInfo({Entity: 'Device', Key: 'PhoneModel'});
-			//var model = '网页';
 			showPage('loading');
-			ajax_post2('http://cmt.ithome.com/api/comment/submit', getCommentParam(getById('content').className,content),function(error, data) {
+			ajax_post2('http://cmt.ithome.com/api/comment/submit', getCommentParam(getById('content').className, content), function (error, data) {
 				if (error) {
 					alert(error);
 					showPage(ref_page);
-				} else { 
+				} else {
 					alert(data);
 					displayComments('0');
 				}
 			});
 		}
-	}  else if (id === CMD.login) { //选择登录
+	} else if (id === CMD.login) { //选择登录
 		showPage('login_form');
-		getByName('login_email')[0].focus(); 
+		getByName('login_email')[0].focus();
 		softkey('提交', '登录', '返回');
 
-	} else if (id === CMD.logout) { 
+	} else if (id === CMD.logout) {
 		setCookie(null, 'userhash');
 		setCookie(null, 'email');
 		setCookie(null, 'password');
@@ -389,7 +356,7 @@ function selectMenu(id) { //选择了菜单项
 		}
 		alert('注销成功！');
 	} else if (id === CMD.comments) { //查看评论页面
-		displayComments('0'); 
+		displayComments('0');
 		window.scrollTo(0, 0);
 	}
 }
@@ -409,10 +376,10 @@ function dologin() {
 		} else {
 			if (data.ok === 1) {
 				alert("登陆成功");
-				setCookie(userhash, 'userhash'); 
+				setCookie(userhash, 'userhash');
 				setCookie(data.userinfo.username, 'email');
 				setCookie(getMd5(password), 'password');
-				setCookie(data.userinfo.nickname, 'nickname'); 
+				setCookie(data.userinfo.nickname, 'nickname');
 				if (ref_page === "list") {
 					menu = loginedlistmenu;
 				}
@@ -431,22 +398,22 @@ function dologin() {
 	});
 }
 
-function returnKey() { 
+function returnKey() {
 	if (last_page === "login_form" || last_page === "about" || last_page === "article") {
 		showPage("list");
 	}
 	else if (last_page === "comments") {
 		showPage("article");
-    }
+	}
 }
 function SoftRight() {
 	if (isloading === 1) {
-		isloading = 0; resetLRkey(); showPage(last_page); 
+		isloading = 0; resetLRkey(); showPage(last_page);
 	}
 	if (isshowmenu === 1) {
 		hideMenu();
 		return;
-    }
+	}
 	if ($('#softkey-right').text() == "退出") {
 		window.close();
 	} else { //返回 
@@ -455,14 +422,14 @@ function SoftRight() {
 }
 
 function setLastnewsindex() {
-	lastnewsindex = document.activeElement.tabIndex; 
+	lastnewsindex = document.activeElement.tabIndex;
 	if (lastnewsindex < 0) {
 		lastnewsindex = 0;
-    }
+	}
 }
 
 function enter() {
-	if (last_page === "about") { 
+	if (last_page === "about") {
 		return;
 	}
 	if (last_page === "login_form") {
@@ -478,38 +445,35 @@ function enter() {
 		selectMenuItem(cmd);
 		return;
 	}
-	if (last_page === "list") { 
+	if (last_page === "list") {
 		setLastnewsindex();
-		const currentIndex = document.activeElement.tabIndex; 
+		const currentIndex = document.activeElement.tabIndex;
 		const items = document.querySelectorAll('.item');
-		const targetElement = items[currentIndex];  
-		if($(targetElement).data("showitem"))
-		{
+		const targetElement = items[currentIndex];
+		if ($(targetElement).data("showitem")) {
 			displayArticle($(targetElement).data("showitem"));
 		}
-		else if ($(targetElement).data("showitem2"))
-		{
-			
+		else if ($(targetElement).data("showitem2")) {
+
 			displayList($(targetElement).data("showitem2"));
 		}
- 
+
 	}
-	else if (last_page === "comments")
-	{
+	else if (last_page === "comments") {
 		displayComments($("#next_button_comments").data("showitem2"))
-    }
+	}
 	else {
 		return;
-    }
+	}
 }
 
-var isshowmenu = 0; 
+var isshowmenu = 0;
 var lastl = "";
 var lastm = "";
 var lastr = "";
 var lastnewsindex = 0;
-function showMenu() { 
-	isshowmenu = 1; 
+function showMenu() {
+	isshowmenu = 1;
 	setLastnewsindex();
 	getById("menu").style.display = "block";
 	lastl = $('#softkey-left').text();
@@ -518,10 +482,9 @@ function showMenu() {
 
 	var str = "";
 
-	for (var i = 0; i < menu.length; i++)
-	{
-		str += '<li class="menuitem" tabIndex="'+i+'" data-menucmd="' + menu[i].cmd + '">' + menu[i].name + '</li>';
-    }
+	for (var i = 0; i < menu.length; i++) {
+		str += '<li class="menuitem" tabIndex="' + i + '" data-menucmd="' + menu[i].cmd + '">' + menu[i].name + '</li>';
+	}
 	getById("menucontainer").innerHTML = str;
 	const items = document.querySelectorAll('.menuitem');
 	items[0].focus();
@@ -538,53 +501,53 @@ function hideMenu() {
 	}
 	catch (err) {
 
-    }
+	}
 }
 function selectMenuItem(cmd) {
-	try { 
-		isshowmenu = 0; 
-		selectMenu(cmd); 
+	try {
+		isshowmenu = 0;
+		selectMenu(cmd);
 	}
-	catch (err) { 
+	catch (err) {
 		alert(err);
 	}
 }
 
-function SoftLeft() { 
+function SoftLeft() {
 	if (last_page === "about") {
 		showPage("list");
 		return;
 	}
-	if (last_page==="login_form") {
+	if (last_page === "login_form") {
 		dologin();
 		return;
-	} 
-	if (isshowmenu === 0) {  
+	}
+	if (isshowmenu === 0) {
 		showMenu()
 	}
-	else { 
-		const currentIndex = document.activeElement.tabIndex; 
+	else {
+		const currentIndex = document.activeElement.tabIndex;
 		const items = document.querySelectorAll('.menuitem');
 		const targetElement = items[currentIndex];
-		var cmd = parseInt($(targetElement).data("menucmd")); 
+		var cmd = parseInt($(targetElement).data("menucmd"));
 		hideMenu();
-		selectMenuItem(cmd); 
-    }
+		selectMenuItem(cmd);
+	}
 }
 
 //设置导航键函数
 var tab_location = 1;//设置header位置
 function nav(move) {
 	if (last_page === "login_form") {
-		const activeElement = document.activeElement; 
-		if (activeElement && activeElement.tabIndex === 1) {   
+		const activeElement = document.activeElement;
+		if (activeElement && activeElement.tabIndex === 1) {
 			document.querySelectorAll('#login_email')[0].focus();
 		}
-		else {  
+		else {
 			document.querySelectorAll('#login_password')[0].focus();
-        }
+		}
 		return;
-	} 
+	}
 	if (isshowmenu === 1) {
 		const currentIndex = document.activeElement.tabIndex;
 		var next = currentIndex + move;
@@ -593,7 +556,7 @@ function nav(move) {
 		}
 		else if (next >= menu.length) {
 			next = 0;
-		} 
+		}
 		const items = document.querySelectorAll('.menuitem');
 		const targetElement = items[next];
 		targetElement.focus();
@@ -608,7 +571,7 @@ function nav(move) {
 		if (next == 0) {
 			$('.items').scrollTop(0);
 		}
-    }
+	}
 }
 
 function tab(move) {
@@ -619,14 +582,14 @@ function tab(move) {
 //设置按键函数
 function handleKeydown(e) {
 	if (isloading === 1) {
-		if (e.key === 'SoftRight') { 
-			SoftRight(); 
-        }
+		if (e.key === 'SoftRight') {
+			SoftRight();
+		}
 		return;
 	}
 	if (e.key != "EndCall" && isshowmenu) {
 		e.preventDefault();//清除默认行为（滚动屏幕等）  
-    }
+	}
 	if (e.key != "EndCall" && last_page == "list") {
 		e.preventDefault();//清除默认行为（滚动屏幕等） 
 	}
@@ -666,19 +629,16 @@ function handleKeydown(e) {
 //设置触发器
 document.activeElement.addEventListener('keydown', handleKeydown);
 softkey('选项', '查看', '退出');
-window.onload = function() { //应用载入之后开始执行。
-	getById('about').innerHTML = '<h3>' + info.appname + '</h3><p>版本：' + info.version + '</p><p>简介：' + info.summary + '</p><p>感谢：' + info.thanks + '</p><p>官方网站：' + info.website +'</p><p></p>';
-	//widget.setNavigationEnabled(false); //设置成按键控制
-	 
-	if (getCookie('userhash')) { 
+window.onload = function () { //应用载入之后开始执行。
+	getById('about').innerHTML = '<h3>' + info.appname + '</h3><p>版本：' + info.version + '</p><p>简介：' + info.summary + '</p><p>感谢：' + info.thanks + '</p><p>官方网站：' + info.website + '</p><p></p>';
+	if (getCookie('userhash')) {
 		menu = loginedlistmenu;
-	} else { 
+	} else {
 		menu = unloginedlistmenu;
-	} 
-	var timer = setTimeout(function() {
+	}
+	var timer = setTimeout(function () {
 		document.body.removeChild(getById('welcome')); //关闭欢迎界面
-		displayList(0); 
-		//menu.showSoftkeys(); 
+		displayList(0);
 		clearTimeout(timer);
 	}, 1000);
 };
